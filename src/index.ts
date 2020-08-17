@@ -1,5 +1,5 @@
 import { getInput } from "@actions/core";
-import { getOctokit } from "@actions/github";
+import { getOctokit, context } from "@actions/github";
 import slugify from "@sindresorhus/slugify";
 import { execSync } from "child_process";
 import { readJson, writeFile, copyFile } from "fs-extra";
@@ -36,26 +36,28 @@ export const run = async () => {
       `surge --project __sapper__/export --domain ${prefix}-${slug}.surge.sh`
     ).toString();
     console.log(result);
+    console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
   } catch (error) {
     console.log(error);
   }
 
-  console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
   await octokit.issues.createComment({
-    owner,
-    repo,
+    owner: context.repo.owner,
+    repo: context.repo.repo,
     issue_number: prNumber,
     body: `This pull request has been automatically deployed.
 ✅ Preview: https://${prefix}-${slug}.surge.sh
 🔍 Logs: https://github.com/${prefix}-co/koj/actions/runs/${process.env.GITHUB_RUN_ID}`,
   });
+  console.log("Added comment to PR");
+
   await octokit.issues.addLabels({
-    owner,
-    repo,
+    owner: context.repo.owner,
+    repo: context.repo.repo,
     issue_number: prNumber,
     labels: ["deployed"],
   });
-  console.log("Commented");
+  console.log("Added label");
 };
 
 run();
