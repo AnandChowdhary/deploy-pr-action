@@ -1,0 +1,27 @@
+name: Deploy CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+jobs:
+  release:
+    name: Deploy website
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Deploy
+        uses: koj-co/deploy-pr-action@master
+        with:
+          prefix: deploy-pr-action # Prefix for deployment URL
+          distDir: . # Path to dist directory
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
