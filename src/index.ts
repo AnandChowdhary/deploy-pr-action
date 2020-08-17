@@ -24,17 +24,20 @@ export const run = async () => {
     getInput("prefix") || slugify(`${context.repo.owner}/${context.repo.repo}`);
   const robotsTxtPath = getInput("robotsTxtPath");
   const distDir = getInput("distDir");
+  const addDeployment = getInput("deploymentEnvironment");
   const octokit = getOctokit(token);
 
   if (robotsTxtPath) await createRobotsTxt(robotsTxtPath);
 
-  const deployment = await octokit.repos.createDeployment({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    ref: context.ref,
-    environment: "Preview",
-    production_environment: false,
-  });
+  let deployment: any = undefined;
+  if (addDeployment)
+    deployment = await octokit.repos.createDeployment({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      ref: context.ref,
+      environment: "Preview",
+      production_environment: false,
+    });
   console.log("Added deployment");
 
   if (context.payload.pull_request) {
@@ -48,22 +51,24 @@ export const run = async () => {
       ).toString();
       console.log(result);
       console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
-      await octokit.repos.createDeploymentStatus({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        deployment_id: (deployment.data as any).id,
-        state: "success",
-        environment_url: `https://${prefix}-${slug}.surge.sh`,
-        log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
-      });
+      if (addDeployment)
+        await octokit.repos.createDeploymentStatus({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          deployment_id: (deployment.data as any).id,
+          state: "success",
+          environment_url: `https://${prefix}-${slug}.surge.sh`,
+          log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+        });
     } catch (error) {
       console.log(error);
-      await octokit.repos.createDeploymentStatus({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        deployment_id: (deployment.data as any).id,
-        state: "error",
-      });
+      if (addDeployment)
+        await octokit.repos.createDeploymentStatus({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          deployment_id: (deployment.data as any).id,
+          state: "error",
+        });
       console.log("Added deployment success fail");
       setFailed("Deployment error");
     }
@@ -94,22 +99,24 @@ export const run = async () => {
       ).toString();
       console.log(result);
       console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
-      await octokit.repos.createDeploymentStatus({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        deployment_id: (deployment.data as any).id,
-        state: "success",
-        environment_url: `https://${prefix}-${slug}.surge.sh`,
-        log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
-      });
+      if (addDeployment)
+        await octokit.repos.createDeploymentStatus({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          deployment_id: (deployment.data as any).id,
+          state: "success",
+          environment_url: `https://${prefix}-${slug}.surge.sh`,
+          log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+        });
     } catch (error) {
       console.log(error);
-      await octokit.repos.createDeploymentStatus({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        deployment_id: (deployment.data as any).id,
-        state: "error",
-      });
+      if (addDeployment)
+        await octokit.repos.createDeploymentStatus({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          deployment_id: (deployment.data as any).id,
+          state: "error",
+        });
       console.log("Added deployment success fail");
       setFailed("Deployment error");
     }
