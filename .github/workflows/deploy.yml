@@ -25,3 +25,5 @@ jobs:
           distDir: . # Path to dist directory
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }} # Surge.sh email
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }} # Surge.sh token
