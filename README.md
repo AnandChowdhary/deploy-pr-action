@@ -36,11 +36,22 @@ The directory to deploy, for example `dist` or `public`
 
 The GitHub token is required to add labels, comments, etc., on the PR: `GITHUB_TOKEN: ${{ secrets.GH_PAT }}`
 
+#### `SURGE_LOGIN`
+
+Your Surge.sh email address, required to deploy site to Surge.sh
+
+#### `SURGE_TOKEN`
+
+Your Surge.sh login token, required to deploy site to Surge.sh (get it by doing `surge token`)
+
 ### Example
 
 ```yaml
 name: Deploy CI
 on:
+  push:
+    branches-ignore:
+      - master
   pull_request:
     types:
       - opened
@@ -68,7 +79,9 @@ jobs:
           robotsTxtPath: dist/robots.txt # Add robots.txt file
           distDir: dist # Path to dist directory
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub token
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }} # Surge.sh email
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }} # Surge.sh token
 ```
 
 ## 📄 License
