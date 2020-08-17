@@ -15,6 +15,8 @@ export const run = async () => {
   const token = getInput("token") || process.env.GITHUB_TOKEN;
   if (!token) throw new Error("GitHub token not found");
 
+  execSync("npm install --global surge");
+
   const prefix =
     getInput("prefix") || slugify(`${context.repo.owner}/${context.repo.repo}`);
   const robotsTxtPath = getInput("robotsTxtPath");
