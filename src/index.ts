@@ -32,7 +32,7 @@ export const run = async () => {
     owner: context.repo.owner,
     repo: context.repo.repo,
     ref: context.ref,
-    environment: "staging",
+    environment: "Preview",
     production_environment: false,
   });
   console.log("Added deployment");
@@ -48,6 +48,12 @@ export const run = async () => {
       ).toString();
       console.log(result);
       console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
+      await octokit.repos.createDeploymentStatus({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        deployment_id: (deployment.data as any).id,
+        state: "success",
+      });
     } catch (error) {
       console.log(error);
       await octokit.repos.createDeploymentStatus({
@@ -86,6 +92,12 @@ export const run = async () => {
       ).toString();
       console.log(result);
       console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
+      await octokit.repos.createDeploymentStatus({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        deployment_id: (deployment.data as any).id,
+        state: "success",
+      });
     } catch (error) {
       console.log(error);
       await octokit.repos.createDeploymentStatus({
