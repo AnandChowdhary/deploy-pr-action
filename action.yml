@@ -1,5 +1,7 @@
 name: Deploy PR
 description: Deploy pull requests as static sites to Surge.sh
+icon: arrow-up-circle
+color: purple
 author: "Koj <https://github.com/koj.co>"
 inputs:
   token:
