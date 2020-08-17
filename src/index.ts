@@ -73,6 +73,23 @@ export const run = async () => {
     labels: ["deployed"],
   });
   console.log("Added label");
+
+  const deployment = await octokit.repos.createDeployment({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    ref: context.ref,
+    environment: "staging",
+    production_environment: false,
+  });
+  console.log("Added deployment");
+
+  await octokit.repos.createDeploymentStatus({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    deployment_id: (deployment.data as any).id,
+    state: "success",
+  });
+  console.log("Added deployment status");
 };
 
 run();
