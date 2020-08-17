@@ -13,7 +13,63 @@ This is a GitHub Action that automatically deploys every pull request as a stati
 - No search engine indexing for branch sites (`robots.txt` injection)
 - Label and comment on PRs with the deployment and log URLs
 - Update your staging GitHub environment status
-- Send a Slack message on a new deployment with its URL
+
+## ⚙️ Usage
+
+### Inputs
+
+#### `prefix`
+
+Prefix for deployment URL, e.g., `example` will translate to https://example-PR_NAME.surge.sh
+
+#### `robotsTxtPath`
+
+Generate a `robots.txt` file to prevent search engines from indexing the deployment
+
+#### `distDir`
+
+The directory to deploy, for example `dist` or `public`
+
+### Environment variables
+
+#### `GITHUB_TOKEN`
+
+The GitHub token is required to add labels, comments, etc., on the PR: `GITHUB_TOKEN: ${{ secrets.GH_PAT }}`
+
+### Example
+
+```yaml
+name: Deploy CI
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+jobs:
+  release:
+    name: Deploy website
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: npm ci
+      - name: Build static site
+        run: npm run build # Build your website
+      - name: Deploy
+        uses: koj-co/deploy-pr-action@v1.0.1
+        with:
+          prefix: example # Prefix for deployment URL
+          robotsTxtPath: dist/robots.txt # Add robots.txt file
+          distDir: dist # Path to dist directory
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+```
 
 ## 📄 License
 
