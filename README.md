@@ -1,6 +1,6 @@
 # 🚀🎬 Deploy PR Action
 
-This is a GitHub Action that automatically deploys every pull request as a static site using [Surge.sh](https://surge.sh).
+This is a GitHub Action that automatically deploys all pull requests and branches as a static site using [Surge.sh](https://surge.sh).
 
 [![Test CI](https://github.com/koj-co/deploy-pr-action/workflows/Test%20CI/badge.svg)](https://github.com/koj-co/deploy-pr-action/actions?query=workflow%3A%22Test+CI%22)
 [![Release CI](https://github.com/koj-co/deploy-pr-action/workflows/Release%20CI/badge.svg)](https://github.com/koj-co/deploy-pr-action/actions?query=workflow%3A%22Release+CI%22)
