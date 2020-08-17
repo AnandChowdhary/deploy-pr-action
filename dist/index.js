@@ -3771,7 +3771,8 @@ const github_1 = __webpack_require__(469);
 const slugify_1 = __importDefault(__webpack_require__(178));
 const child_process_1 = __webpack_require__(129);
 const fs_extra_1 = __webpack_require__(226);
-const createRobotsTxt = (path) => fs_extra_1.writeFile(path, `User-agent: *
+const createRobotsTxt = (path, robotsContent) => fs_extra_1.writeFile(path, robotsContent ||
+    `User-agent: *
 Disallow: /`);
 exports.run = async () => {
     const token = core_1.getInput("token") || process.env.GITHUB_TOKEN;
@@ -3786,14 +3787,14 @@ exports.run = async () => {
     const addDeployment = core_1.getInput("deploymentEnvironment");
     const octokit = github_1.getOctokit(token);
     if (robotsTxtPath)
-        await createRobotsTxt(robotsTxtPath);
+        await createRobotsTxt(robotsTxtPath, core_1.getInput("robotsTxtContent"));
     let deployment = undefined;
     if (addDeployment)
         deployment = await octokit.repos.createDeployment({
             owner: github_1.context.repo.owner,
             repo: github_1.context.repo.repo,
             ref: github_1.context.ref,
-            environment: "Preview",
+            environment: core_1.getInput("environmentName") || "Preview",
             production_environment: false,
         });
     console.log("Added deployment");
@@ -3827,21 +3828,25 @@ exports.run = async () => {
             console.log("Added deployment success fail");
             core_1.setFailed("Deployment error");
         }
-        await octokit.issues.createComment({
-            owner: github_1.context.repo.owner,
-            repo: github_1.context.repo.repo,
-            issue_number: prNumber,
-            body: `This pull request has been automatically deployed.
+        if (!core_1.getInput("skipComment"))
+            await octokit.issues.createComment({
+                owner: github_1.context.repo.owner,
+                repo: github_1.context.repo.repo,
+                issue_number: prNumber,
+                body: `This pull request has been automatically deployed.
 ✅ Preview: https://${prefix}-${slug}.surge.sh
 🔍 Logs: https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
-        });
+            });
         console.log("Added comment to PR");
-        await octokit.issues.addLabels({
-            owner: github_1.context.repo.owner,
-            repo: github_1.context.repo.repo,
-            issue_number: prNumber,
-            labels: ["deployed"],
-        });
+        if (!core_1.getInput("skipLabels"))
+            await octokit.issues.addLabels({
+                owner: github_1.context.repo.owner,
+                repo: github_1.context.repo.repo,
+                issue_number: prNumber,
+                labels: (core_1.getInput("labels") || "deployed")
+                    .split(",")
+                    .map((label) => label.trim()),
+            });
         console.log("Added label");
     }
     else if (github_1.context.ref) {
