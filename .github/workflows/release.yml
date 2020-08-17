@@ -26,6 +26,11 @@ jobs:
         run: npm run test
       - name: Build package
         run: npm run package
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
       - name: Commit new data
         uses: stefanzweifel/git-auto-commit-action@v4.4.1
         with:
@@ -33,8 +38,3 @@ jobs:
           commit_user_name: Koj Bot
           commit_user_email: bot@koj.co
           commit_author: Koj Bot <bot@koj.co>
-      - name: Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
