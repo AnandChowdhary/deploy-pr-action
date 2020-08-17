@@ -16,6 +16,21 @@ inputs:
   distDir:
     required: true
     description: Directory to deploy
+  robotsContent:
+    required: false
+    description: Content for robots.txt file
+  environmentName:
+    required: false
+    description: Name of the deployment environment
+  skipComment:
+    required: false
+    description: Skip adding the URL comment on PRs
+  skipLabels:
+    required: false
+    description: Skip adding labels to PRs
+  labels:
+    required: false
+    description: Labels to add to PRs
 runs:
   using: node12
   main: dist/index.js
