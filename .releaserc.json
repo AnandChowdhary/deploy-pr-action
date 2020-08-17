@@ -15,7 +15,7 @@
     [
       "@semantic-release/git",
       {
-        "message": ":bookmark: v${nextRelease.version} [skip ci]\n\nhttps://github.com/koj-co/action.ts/releases/tag/${nextRelease.gitTag}"
+        "message": ":bookmark: v${nextRelease.version} [skip ci]\n\nhttps://github.com/koj-co/deploy-pr-action/releases/tag/${nextRelease.gitTag}"
       }
     ]
   ]
