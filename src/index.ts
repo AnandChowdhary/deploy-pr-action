@@ -53,7 +53,6 @@ export const run = async () => {
         repo: context.repo.repo,
         deployment_id: (deployment.data as any).id,
         state: "success",
-        target_url: `https://${prefix}-${slug}.surge.sh`,
         environment_url: `https://${prefix}-${slug}.surge.sh`,
         log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
       });
@@ -100,7 +99,6 @@ export const run = async () => {
         repo: context.repo.repo,
         deployment_id: (deployment.data as any).id,
         state: "success",
-        target_url: `https://${prefix}-${slug}.surge.sh`,
         environment_url: `https://${prefix}-${slug}.surge.sh`,
         log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
       });
