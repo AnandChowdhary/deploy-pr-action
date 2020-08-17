@@ -4,10 +4,11 @@ import slugify from "@sindresorhus/slugify";
 import { execSync } from "child_process";
 import { writeFile } from "fs-extra";
 
-const createRobotsTxt = (path: string) =>
+const createRobotsTxt = (path: string, robotsContent?: string) =>
   writeFile(
     path,
-    `User-agent: *
+    robotsContent ||
+      `User-agent: *
 Disallow: /`
   );
 
@@ -27,7 +28,8 @@ export const run = async () => {
   const addDeployment = getInput("deploymentEnvironment");
   const octokit = getOctokit(token);
 
-  if (robotsTxtPath) await createRobotsTxt(robotsTxtPath);
+  if (robotsTxtPath)
+    await createRobotsTxt(robotsTxtPath, getInput("robotsTxtContent"));
 
   let deployment: any = undefined;
   if (addDeployment)
@@ -35,7 +37,7 @@ export const run = async () => {
       owner: context.repo.owner,
       repo: context.repo.repo,
       ref: context.ref,
-      environment: "Preview",
+      environment: getInput("environmentName") || "Preview",
       production_environment: false,
     });
   console.log("Added deployment");
@@ -73,22 +75,26 @@ export const run = async () => {
       setFailed("Deployment error");
     }
 
-    await octokit.issues.createComment({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      issue_number: prNumber,
-      body: `This pull request has been automatically deployed.
+    if (!getInput("skipComment"))
+      await octokit.issues.createComment({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: prNumber,
+        body: `This pull request has been automatically deployed.
 ✅ Preview: https://${prefix}-${slug}.surge.sh
 🔍 Logs: https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
-    });
+      });
     console.log("Added comment to PR");
 
-    await octokit.issues.addLabels({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      issue_number: prNumber,
-      labels: ["deployed"],
-    });
+    if (!getInput("skipLabels"))
+      await octokit.issues.addLabels({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: prNumber,
+        labels: (getInput("labels") || "deployed")
+          .split(",")
+          .map((label) => label.trim()),
+      });
     console.log("Added label");
   } else if (context.ref) {
     const slug = slugify(context.ref.replace("refs/heads/", ""));

@@ -18,6 +18,10 @@ This is a GitHub Action that automatically deploys all pull requests and branche
 
 ### Inputs
 
+#### `distDir` (required)
+
+The directory to deploy, for example `dist` or `public`
+
 #### `prefix`
 
 Prefix for deployment URL, e.g., `example` will translate to https://example-PR_NAME.surge.sh
@@ -26,21 +30,42 @@ Prefix for deployment URL, e.g., `example` will translate to https://example-PR_
 
 Generate a `robots.txt` file to prevent search engines from indexing the deployment
 
-#### `distDir`
+#### `robotsContent`
 
-The directory to deploy, for example `dist` or `public`
+Content for `robots.txt` file, defaults to:
+
+```txt
+User-agent: *
+Disallow: /
+```
+
+#### `environmentName`
+
+Name of the deployment environment on GitHub, defaults to "Preview"
+
+#### `skipComment`
+
+Skip adding the deployment details comment, defaults to `false`
+
+#### `skipLabels`
+
+Skip adding the labels to pull requests, defaults to `false`
+
+#### `labels`
+
+Labels to add to pull requests as a comma-separated list, defaults to `deployed`
 
 ### Environment variables
 
-#### `GITHUB_TOKEN`
+#### `GITHUB_TOKEN` (required)
 
 The GitHub token is required to add labels, comments, etc., on the PR: `GITHUB_TOKEN: ${{ secrets.GH_PAT }}`
 
-#### `SURGE_LOGIN`
+#### `SURGE_LOGIN` (required)
 
 Your Surge.sh email address, required to deploy site to Surge.sh
 
-#### `SURGE_TOKEN`
+#### `SURGE_TOKEN` (required)
 
 Your Surge.sh login token, required to deploy site to Surge.sh (get it by doing `surge token`)
 
