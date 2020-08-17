@@ -3783,16 +3783,19 @@ exports.run = async () => {
     const prefix = core_1.getInput("prefix") || slugify_1.default(`${github_1.context.repo.owner}/${github_1.context.repo.repo}`);
     const robotsTxtPath = core_1.getInput("robotsTxtPath");
     const distDir = core_1.getInput("distDir");
+    const addDeployment = core_1.getInput("deploymentEnvironment");
     const octokit = github_1.getOctokit(token);
     if (robotsTxtPath)
         await createRobotsTxt(robotsTxtPath);
-    const deployment = await octokit.repos.createDeployment({
-        owner: github_1.context.repo.owner,
-        repo: github_1.context.repo.repo,
-        ref: github_1.context.ref,
-        environment: "Preview",
-        production_environment: false,
-    });
+    let deployment = undefined;
+    if (addDeployment)
+        deployment = await octokit.repos.createDeployment({
+            owner: github_1.context.repo.owner,
+            repo: github_1.context.repo.repo,
+            ref: github_1.context.ref,
+            environment: "Preview",
+            production_environment: false,
+        });
     console.log("Added deployment");
     if (github_1.context.payload.pull_request) {
         const slug = slugify_1.default(github_1.context.payload.pull_request.head.ref);
@@ -3802,23 +3805,25 @@ exports.run = async () => {
             const result = child_process_1.execSync(`surge --project ${distDir} --domain ${prefix}-${slug}.surge.sh`).toString();
             console.log(result);
             console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
-            await octokit.repos.createDeploymentStatus({
-                owner: github_1.context.repo.owner,
-                repo: github_1.context.repo.repo,
-                deployment_id: deployment.data.id,
-                state: "success",
-                environment_url: `https://${prefix}-${slug}.surge.sh`,
-                log_url: `https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
-            });
+            if (addDeployment)
+                await octokit.repos.createDeploymentStatus({
+                    owner: github_1.context.repo.owner,
+                    repo: github_1.context.repo.repo,
+                    deployment_id: deployment.data.id,
+                    state: "success",
+                    environment_url: `https://${prefix}-${slug}.surge.sh`,
+                    log_url: `https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+                });
         }
         catch (error) {
             console.log(error);
-            await octokit.repos.createDeploymentStatus({
-                owner: github_1.context.repo.owner,
-                repo: github_1.context.repo.repo,
-                deployment_id: deployment.data.id,
-                state: "error",
-            });
+            if (addDeployment)
+                await octokit.repos.createDeploymentStatus({
+                    owner: github_1.context.repo.owner,
+                    repo: github_1.context.repo.repo,
+                    deployment_id: deployment.data.id,
+                    state: "error",
+                });
             console.log("Added deployment success fail");
             core_1.setFailed("Deployment error");
         }
@@ -3846,23 +3851,25 @@ exports.run = async () => {
             const result = child_process_1.execSync(`surge --project ${distDir} --domain ${prefix}-${slug}.surge.sh`).toString();
             console.log(result);
             console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
-            await octokit.repos.createDeploymentStatus({
-                owner: github_1.context.repo.owner,
-                repo: github_1.context.repo.repo,
-                deployment_id: deployment.data.id,
-                state: "success",
-                environment_url: `https://${prefix}-${slug}.surge.sh`,
-                log_url: `https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
-            });
+            if (addDeployment)
+                await octokit.repos.createDeploymentStatus({
+                    owner: github_1.context.repo.owner,
+                    repo: github_1.context.repo.repo,
+                    deployment_id: deployment.data.id,
+                    state: "success",
+                    environment_url: `https://${prefix}-${slug}.surge.sh`,
+                    log_url: `https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+                });
         }
         catch (error) {
             console.log(error);
-            await octokit.repos.createDeploymentStatus({
-                owner: github_1.context.repo.owner,
-                repo: github_1.context.repo.repo,
-                deployment_id: deployment.data.id,
-                state: "error",
-            });
+            if (addDeployment)
+                await octokit.repos.createDeploymentStatus({
+                    owner: github_1.context.repo.owner,
+                    repo: github_1.context.repo.repo,
+                    deployment_id: deployment.data.id,
+                    state: "error",
+                });
             console.log("Added deployment success fail");
             core_1.setFailed("Deployment error");
         }
