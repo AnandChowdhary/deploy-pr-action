@@ -1,20 +1,13 @@
-import { getInput, debug, setFailed, setOutput } from "@actions/core";
+import { getInput } from "@actions/core";
+import { getOctokit } from "@actions/github";
+import slugify from "@sindresorhus/slugify";
+import { execSync } from "child_process";
+import { readJson, writeFile, copyFile } from "fs-extra";
+import { join } from "path";
 
 export const run = async () => {
-  try {
-    const ms: string = getInput("milliseconds");
-    debug(`Waiting ${ms} milliseconds ...`);
-
-    debug(new Date().toTimeString());
-    await wait(parseInt(ms, 10));
-    debug(new Date().toTimeString());
-
-    setOutput("time", new Date().toTimeString());
-  } catch (error) {
-    setFailed(error.message);
-  }
+  const token = getInput("GITHUB_TOKEN");
+  const octokit = getOctokit(token);
 };
 
-export const wait = (milliseconds: number) => {
-  return new Promise((resolve) => setTimeout(() => resolve(), milliseconds));
-};
+run();
