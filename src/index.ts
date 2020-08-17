@@ -23,12 +23,27 @@ export const run = async () => {
   const distDir = getInput("distDir");
   const octokit = getOctokit(token);
 
+  if (robotsTxtPath) await createRobotsTxt(robotsTxtPath);
+
+  if (!context.payload.pull_request && context.ref) {
+    const slug = slugify(context.ref.replace("refs/heads/", ""));
+    console.log("Deploying commit", slug);
+    try {
+      const result = execSync(
+        `surge --project ${distDir} --domain ${prefix}-${slug}.surge.sh`
+      ).toString();
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+      setFailed("Deployment error");
+    }
+    console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
+  }
+
   if (!context.payload.pull_request) return console.log("Skipping: Not a PR");
   const slug = slugify(context.payload.pull_request.head.ref);
   const prNumber = context.payload.pull_request.number;
   console.log(`Deploying ${prNumber}`, slug);
-
-  if (robotsTxtPath) await createRobotsTxt(robotsTxtPath);
 
   try {
     const result = execSync(
