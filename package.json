@@ -27,6 +27,7 @@
   "homepage": "https://github.com/koj-co/action.ts#readme",
   "devDependencies": {
     "@semantic-release/git": "^9.0.0",
+    "@types/fs-extra": "^9.0.1",
     "@types/jest": "^26.0.10",
     "@zeit/ncc": "^0.22.3",
     "jest": "^26.4.0",
@@ -37,7 +38,8 @@
   },
   "dependencies": {
     "@actions/core": "^1.2.4",
-    "@sindresorhus/slugify": "^1.1.0"
+    "@sindresorhus/slugify": "^1.1.0",
+    "fs-extra": "^9.0.1"
   },
   "jest": {
     "roots": [
