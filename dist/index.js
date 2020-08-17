@@ -3807,7 +3807,6 @@ exports.run = async () => {
                 repo: github_1.context.repo.repo,
                 deployment_id: deployment.data.id,
                 state: "success",
-                target_url: `https://${prefix}-${slug}.surge.sh`,
                 environment_url: `https://${prefix}-${slug}.surge.sh`,
                 log_url: `https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
             });
@@ -3852,7 +3851,6 @@ exports.run = async () => {
                 repo: github_1.context.repo.repo,
                 deployment_id: deployment.data.id,
                 state: "success",
-                target_url: `https://${prefix}-${slug}.surge.sh`,
                 environment_url: `https://${prefix}-${slug}.surge.sh`,
                 log_url: `https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
             });
