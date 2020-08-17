@@ -3782,13 +3782,26 @@ exports.run = async () => {
     const robotsTxtPath = core_1.getInput("robotsTxtPath");
     const distDir = core_1.getInput("distDir");
     const octokit = github_1.getOctokit(token);
+    if (robotsTxtPath)
+        await createRobotsTxt(robotsTxtPath);
+    if (!github_1.context.payload.pull_request && github_1.context.ref) {
+        const slug = slugify_1.default(github_1.context.ref.replace("refs/heads/", ""));
+        console.log("Deploying commit", slug);
+        try {
+            const result = child_process_1.execSync(`surge --project ${distDir} --domain ${prefix}-${slug}.surge.sh`).toString();
+            console.log(result);
+        }
+        catch (error) {
+            console.log(error);
+            core_1.setFailed("Deployment error");
+        }
+        console.log("Deployed", `https://${prefix}-${slug}.surge.sh`);
+    }
     if (!github_1.context.payload.pull_request)
         return console.log("Skipping: Not a PR");
     const slug = slugify_1.default(github_1.context.payload.pull_request.head.ref);
     const prNumber = github_1.context.payload.pull_request.number;
     console.log(`Deploying ${prNumber}`, slug);
-    if (robotsTxtPath)
-        await createRobotsTxt(robotsTxtPath);
     try {
         const result = child_process_1.execSync(`surge --project ${distDir} --domain ${prefix}-${slug}.surge.sh`).toString();
         console.log(result);
@@ -3814,6 +3827,21 @@ exports.run = async () => {
         labels: ["deployed"],
     });
     console.log("Added label");
+    const deployment = await octokit.repos.createDeployment({
+        owner: github_1.context.repo.owner,
+        repo: github_1.context.repo.repo,
+        ref: github_1.context.ref,
+        environment: "staging",
+        production_environment: false,
+    });
+    console.log("Added deployment");
+    await octokit.repos.createDeploymentStatus({
+        owner: github_1.context.repo.owner,
+        repo: github_1.context.repo.repo,
+        deployment_id: deployment.data.id,
+        state: "success",
+    });
+    console.log("Added deployment status");
 };
 exports.run();
 
