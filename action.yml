@@ -16,5 +16,4 @@ inputs:
     description: Directory to deploy
 runs:
   using: node12
-  pre: "npm install --global surge"
   main: dist/index.js
