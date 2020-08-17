@@ -1,6 +1,6 @@
 {
   "name": "deploy-pr-action",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Deploy every pull request to a static URL",
   "main": "dist/index.js",
   "scripts": {
