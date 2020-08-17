@@ -3777,6 +3777,7 @@ exports.run = async () => {
     const token = core_1.getInput("token") || process.env.GITHUB_TOKEN;
     if (!token)
         throw new Error("GitHub token not found");
+    child_process_1.execSync("npm install --global surge");
     const prefix = core_1.getInput("prefix") || slugify_1.default(`${github_1.context.repo.owner}/${github_1.context.repo.repo}`);
     const robotsTxtPath = core_1.getInput("robotsTxtPath");
     const distDir = core_1.getInput("distDir");
