@@ -3817,7 +3817,10 @@ exports.run = async () => {
                 });
         }
         catch (error) {
-            console.log(error);
+            console.log("ERROR", error.status);
+            console.log(error.message);
+            console.log(error.stderr.toString());
+            console.log(error.stdout.toString());
             if (addDeployment)
                 await octokit.repos.createDeploymentStatus({
                     owner: github_1.context.repo.owner,
