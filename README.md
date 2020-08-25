@@ -74,6 +74,8 @@ Your Surge.sh login token, required to deploy site to Surge.sh (get it by doing 
 ```yaml
 name: Deploy CI
 on:
+  issue_comment:
+    types: [created]
   push:
     branches-ignore:
       - master
@@ -86,6 +88,7 @@ jobs:
   release:
     name: Deploy website
     runs-on: ubuntu-18.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]') && (contains(github.event.comment.body, 'Deploy') || contains(github.event.comment.body, 'deploy') || github.event_name == 'push' || github.event_name == 'pull_request')"
     steps:
       - name: Checkout
         uses: actions/checkout@v1
