@@ -62,7 +62,7 @@ export const run = async () => {
           environment_url: `https://${prefix}-${slug}.surge.sh`,
           log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
         });
-      } catch (error) {
+    } catch (error) {
       console.log("ERROR", error.status);
       console.log(error.message);
       console.log(error.stderr.toString());
@@ -78,16 +78,31 @@ export const run = async () => {
       setFailed("Deployment error");
     }
 
-    if (!getInput("skipComment"))
-      await octokit.issues.createComment({
+    if (!getInput("skipComment")) {
+      const comments = await octokit.issues.listComments({
         owner: context.repo.owner,
         repo: context.repo.repo,
         issue_number: prNumber,
-        body: `This pull request has been automatically deployed.
+      });
+      const hasComment = !!comments.data.find((comment) =>
+        comment.body.includes(
+          "This pull request has been automatically deployed."
+        )
+      );
+      if (!hasComment) {
+        await octokit.issues.createComment({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          issue_number: prNumber,
+          body: `This pull request has been automatically deployed.
 ✅ Preview: https://${prefix}-${slug}.surge.sh
 🔍 Logs: https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
-      });
-    console.log("Added comment to PR");
+        });
+        console.log("Added comment to PR");
+      } else {
+        console.log("PR already has comment");
+      }
+    }
 
     if (!getInput("skipLabels"))
       await octokit.issues.addLabels({
