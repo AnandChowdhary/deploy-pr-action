@@ -3831,16 +3831,28 @@ exports.run = async () => {
             console.log("Added deployment success fail");
             core_1.setFailed("Deployment error");
         }
-        if (!core_1.getInput("skipComment"))
-            await octokit.issues.createComment({
+        if (!core_1.getInput("skipComment")) {
+            const comments = await octokit.issues.listComments({
                 owner: github_1.context.repo.owner,
                 repo: github_1.context.repo.repo,
                 issue_number: prNumber,
-                body: `This pull request has been automatically deployed.
+            });
+            const hasComment = !!comments.data.find((comment) => comment.body.includes("This pull request has been automatically deployed."));
+            if (!hasComment) {
+                await octokit.issues.createComment({
+                    owner: github_1.context.repo.owner,
+                    repo: github_1.context.repo.repo,
+                    issue_number: prNumber,
+                    body: `This pull request has been automatically deployed.
 ✅ Preview: https://${prefix}-${slug}.surge.sh
 🔍 Logs: https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`,
-            });
-        console.log("Added comment to PR");
+                });
+                console.log("Added comment to PR");
+            }
+            else {
+                console.log("PR already has comment");
+            }
+        }
         if (!core_1.getInput("skipLabels"))
             await octokit.issues.addLabels({
                 owner: github_1.context.repo.owner,
