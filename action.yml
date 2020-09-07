@@ -31,6 +31,9 @@ inputs:
   labels:
     required: false
     description: Labels to add to PRs
+  failOnDeployError:
+    required: false
+    description: Fail status check if a deploy error occurs
 runs:
   using: node12
   main: dist/index.js
