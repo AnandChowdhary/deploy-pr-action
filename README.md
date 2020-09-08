@@ -55,6 +55,10 @@ Skip adding the labels to pull requests, defaults to `false`
 
 Labels to add to pull requests as a comma-separated list, defaults to `deployed`
 
+### `failOnDeployError`
+
+Set the status check to "failed" if a deployment error occurs, defaults to `false`
+
 ### Environment variables
 
 #### `GITHUB_TOKEN` (required)
