@@ -3776,6 +3776,7 @@ const createRobotsTxt = (path, robotsContent) => fs_extra_1.writeFile(path, robo
 Disallow: /`);
 exports.run = async () => {
     const token = core_1.getInput("token") || process.env.GITHUB_TOKEN;
+    const failOnDeployError = core_1.getInput("failOnDeployError") || process.env.FAIL_ON_DEPLOY_ERROR;
     if (!token)
         throw new Error("GitHub token not found");
     if (!github_1.context.payload.pull_request && !github_1.context.ref)
@@ -3829,7 +3830,8 @@ exports.run = async () => {
                     state: "error",
                 });
             console.log("Added deployment success fail");
-            core_1.setFailed("Deployment error");
+            if (failOnDeployError)
+                core_1.setFailed("Deployment error");
         }
         if (!core_1.getInput("skipComment")) {
             const comments = await octokit.issues.listComments({
@@ -3894,7 +3896,8 @@ exports.run = async () => {
                     state: "error",
                 });
             console.log("Added deployment success fail");
-            core_1.setFailed("Deployment error");
+            if (failOnDeployError)
+                core_1.setFailed("Deployment error");
         }
     }
 };
