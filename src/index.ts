@@ -14,6 +14,7 @@ Disallow: /`
 
 export const run = async () => {
   const token = getInput("token") || process.env.GITHUB_TOKEN;
+  const failOnDeployError = getInput("failOnDeployError") || process.env.FAIL_ON_DEPLOY_ERROR;
   if (!token) throw new Error("GitHub token not found");
 
   if (!context.payload.pull_request && !context.ref)
@@ -75,7 +76,7 @@ export const run = async () => {
           state: "error",
         });
       console.log("Added deployment success fail");
-      setFailed("Deployment error");
+      if (failOnDeployError) setFailed("Deployment error");
     }
 
     if (!getInput("skipComment")) {
@@ -145,7 +146,7 @@ export const run = async () => {
           state: "error",
         });
       console.log("Added deployment success fail");
-      setFailed("Deployment error");
+      if (failOnDeployError) setFailed("Deployment error");
     }
   }
 };
