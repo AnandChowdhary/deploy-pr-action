@@ -55,7 +55,7 @@ Skip adding the labels to pull requests, defaults to `false`
 
 Labels to add to pull requests as a comma-separated list, defaults to `deployed`
 
-### `failOnDeployError`
+#### `failOnDeployError`
 
 Set the status check to "failed" if a deployment error occurs, defaults to `false`
 
