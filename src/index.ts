@@ -14,7 +14,8 @@ Disallow: /`
 
 export const run = async () => {
   const token = getInput("token") || process.env.GITHUB_TOKEN;
-  const failOnDeployError = getInput("failOnDeployError") || process.env.FAIL_ON_DEPLOY_ERROR;
+  const failOnDeployError =
+    getInput("failOnDeployError") || process.env.FAIL_ON_DEPLOY_ERROR;
   if (!token) throw new Error("GitHub token not found");
 
   if (!context.payload.pull_request && !context.ref)
@@ -46,7 +47,15 @@ export const run = async () => {
   if (context.payload.pull_request) {
     const slug = slugify(context.payload.pull_request.head.ref);
     const prNumber = context.payload.pull_request.number;
-    console.log(`Deploying ${prNumber}`, slug);
+
+    if (getInput("command") === "teardown") {
+      console.log(`Tearing down ${prNumber}`, slug);
+      const result = execSync(
+        `surge teardown ${prefix}-${slug}.surge.sh`
+      ).toString();
+      console.log(result);
+      return;
+    } else console.log(`Deploying ${prNumber}`, slug);
 
     try {
       const result = execSync(
