@@ -3864,7 +3864,14 @@ exports.run = async () => {
     if (github_1.context.payload.pull_request) {
         const slug = slugify_1.default(github_1.context.payload.pull_request.head.ref);
         const prNumber = github_1.context.payload.pull_request.number;
-        console.log(`Deploying ${prNumber}`, slug);
+        if (core_1.getInput("command") === "teardown") {
+            console.log(`Tearing down ${prNumber}`, slug);
+            const result = child_process_1.execSync(`surge teardown ${prefix}-${slug}.surge.sh`).toString();
+            console.log(result);
+            return;
+        }
+        else
+            console.log(`Deploying ${prNumber}`, slug);
         try {
             const result = child_process_1.execSync(`surge --project ${distDir} --domain ${prefix}-${slug}.surge.sh`).toString();
             console.log(result);
