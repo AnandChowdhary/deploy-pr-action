@@ -34,6 +34,9 @@ inputs:
   failOnDeployError:
     required: false
     description: Fail status check if a deploy error occurs
+  command:
+    required: false
+    description: Command can be "teardown" or nothing
 runs:
   using: node12
   main: dist/index.js
