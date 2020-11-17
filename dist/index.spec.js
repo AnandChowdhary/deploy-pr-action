@@ -10,3 +10,4 @@ test("test runs", () => {
     };
     console.log(child_process_1.execSync(`node ${ip}`, options).toString());
 });
+//# sourceMappingURL=index.spec.js.map
