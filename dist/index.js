@@ -3836,7 +3836,7 @@ const fs_extra_1 = __webpack_require__(226);
 const createRobotsTxt = (path, robotsContent) => fs_extra_1.writeFile(path, robotsContent ||
     `User-agent: *
 Disallow: /`);
-exports.run = async () => {
+const run = async () => {
     const token = core_1.getInput("token") || process.env.GITHUB_TOKEN;
     const failOnDeployError = core_1.getInput("failOnDeployError") || process.env.FAIL_ON_DEPLOY_ERROR;
     if (!token)
@@ -3970,6 +3970,7 @@ exports.run = async () => {
         }
     }
 };
+exports.run = run;
 exports.run();
 //# sourceMappingURL=index.js.map
 
